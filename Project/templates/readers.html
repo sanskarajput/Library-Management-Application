@@ -1,0 +1,71 @@
+{% for reader in readers %}
+{% set loopVar=loop %}
+<div class="col-12 that_col">
+    <div class="d-flex justify-content-center">
+        <div class="card px-0 my-4 rounded-5 rounded-top-4" style="width:90%;">
+            <h5 class="card-header fw-bold fs-4 username{{loopVar.index}}">{{ reader.username }} Profile</h5>
+
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-8">
+                            <p class="card-text"><strong>Username :</strong> {{ reader.username }}</p>
+                            <p class="card-text"><strong>Date Added :</strong> {{ reader.time.strftime('%d-%m-%Y') }}</p>
+
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete{{loopVar.index}}">Delete</button>
+
+                            <div class="modal fade" id="delete{{loopVar.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Conformation</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Do you really want to <strong>Detete</strong> {{ reader.username }} ?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="/delete_reader/{{reader.id}}" class="btn btn-md btn-danger">Delete</a>
+                                            <button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <img src="/display_profile/{{reader.profile_path}}" align="right" height="130px" width="130px" style="border-radius: 30%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion" id="accordionFlushExample">
+        
+                <div class="accordion-item bg-transparent border-0">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed rounded-pill bg-primary fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{loopVar.index}}" aria-expanded="false" aria-controls="flush-collapseOne">
+                    Granted Books......
+                    </button>
+                </h2>
+                <div id="flush-collapse{{loopVar.index}}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="row accordion-body rounded-3 bg-info m-0">
+                        {% for accss in reader.access %}
+                            {% with %}
+                                <div class="col mb-5">
+                                    {% set book=accss.accessed_book %}
+                                    {% set looop=loop %}
+                                    {% include "book.html" %}
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+                </div>
+
+            </div>
+
+        </div>  
+    </div>
+</div>
+{% endfor %}

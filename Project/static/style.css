@@ -1,0 +1,195 @@
+.background {
+    position: relative;
+    width: 100%;
+    min-height: 750px;
+}
+
+.background::before {
+    content: "";
+    background-image: url(/display/background.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
+    z-index: -1;
+}
+
+
+.container {
+    position: relative;
+    /* z-index: 1; */
+}
+
+.my-font{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.italic{
+    font-style: italic;
+}
+
+.tdn{
+    text-decoration: none;
+}
+
+.pen{
+    pointer-events: none;
+}
+
+.myred{
+    color: rgb(249, 71, 71);
+}
+
+.mydarkred{
+    color:red;
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+.animation{
+    animation: myAnim .4s ease 0s 1 normal forwards;
+}
+
+
+@keyframes myAnim {
+    0% {
+        transform: scale(0.01);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.login-gradient{
+    background-image: linear-gradient(to bottom right, rgb(163, 3, 3), rgb(248, 57, 57));
+}
+
+.admin-login-gradient{
+    background-image: linear-gradient(to bottom right, rgb(84, 82, 82), rgb(34, 33, 33));
+}
+
+.request-gradient{
+    background-image: linear-gradient(to bottom right, rgb(0, 255, 195), rgb(191, 0, 255));
+}
+
+.addform-gradient{
+    background-image: linear-gradient(to bottom right, rgb(247, 127, 235), rgb(224, 0, 0));
+}
+
+.cd-gradient{
+    background-image: linear-gradient(to top right, rgb(0, 0, 0), rgb(101, 97, 97));
+}
+
+.Carousel-gradient{
+    background-image: linear-gradient(to bottom, rgb(255, 152, 152), rgb(211, 49, 49));
+}
+
+.user-gradient{
+    background-image: linear-gradient(to top right, rgb(200, 0, 255), rgb(236, 0, 71));
+}
+
+.l-gradient{
+    background-image: linear-gradient(to top , rgb(216, 207, 219), rgb(2, 0, 1));
+}
+
+.hidden {
+    opacity: 0%;
+}
+
+
+
+.scrollable-content::-webkit-scrollbar {
+    width: 0.1em; 
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background-color: transparent; 
+}
+
+
+body { 
+    display: flex; 
+    justify-content: center; 
+} 
+  
+/* Standard Syntax */
+.ball {
+    animation: bounce 0.5s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+}
+
+@keyframes bounce {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(0, 10px, 0);
+    }
+}
+
+.ball-big {
+    animation: bigger 0.5s infinite alternate cubic-bezier(0.5, 0.05, 1, 0.5);
+}
+
+@keyframes bigger {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+        transform: translate3d(0, 10px, 0) scale(1.2);
+    }
+}
+
+#myInput {
+    width: 100%;
+    font-size:large;
+    padding: 12px 10px 12px 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+}
+
+.display-none{
+    display: none;
+}
+
+.scroll::-webkit-scrollbar {
+    width: 16px;
+}
+
+.scroll::-webkit-scrollbar-track {
+    background-color: #281919;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    background-image: linear-gradient(to bottom right, rgb(0, 255, 195), rgb(191, 0, 255));
+    border-radius: 90px;
+}
+
+.scroll::-webkit-scrollbar-button {
+    display: auto;
+    /* background-image: linear-gradient(to top right, rgb(253, 253, 253), rgb(236, 0, 71)); */
+    background-color: rgb(70, 53, 53);
+    cursor: pointer;
+    height: 10px;
+}
+
+
+.bookForm {
+    background-image: url(/display/bookimage-removebg-preview.png);
+    /* background-color:aqua ; */
+    background-size:42%;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: center top;
+    width: 100%;
+    height:320%;
+    position: absolute;
+
+    }

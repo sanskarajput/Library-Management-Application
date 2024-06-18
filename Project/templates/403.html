@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col text-center fw-bold fs-1 rounded-5 bg-white">You are not allowed for this role..</div><br><br><br><br>
+    <div class="d-flex justify-content-center">
+        <div class="col-4 bg-white rounded-bottom-5">
+            <div class="row justify-content-center">
+                <a href="/{{current_user.label}}_home" class="col-5 text-bottom btn btn-outline-dark btn-xl fs-4 fw-bold border-2">Go to Home</a>
+            </div>
+        </div><br><br><br>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+<br>
+<div class="row justify-content-between" style="height: 570px;">
+    <div class="col-md-3 bg-white rounded border border-black border-2 mb-sm-5 mb-md-auto pb-5 delay hidden" style="background-image: linear-gradient(to bottom right, rgb(195, 255, 0), rgb(0, 255, 119));">
+        <br><br>
+        <div class="row justify-content-evenly">
+            <a href="/dashboard/allbooks" class="col-9 bg-transparent border border-2 border-black link-underline link-underline-opacity-0 rounded-4" style="height: 200px;"><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">Books</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">{{calu_notification().books|length}}</div>
+                </div>
+            </a>
+        </div>
+        <br><br><br>       
+        <div class="row justify-content-evenly">
+            <a href="/dashboard/allsections" class="col-9 bg-transparent border border-2 border-black link-underline link-underline-opacity-0 rounded-4" style="height: 200px;"><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">Sections</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">{{calu_notification().sections|length}}</div>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+
+    <div class="col-md-8 rounded border border-black border-2 delay hidden" style="background-image: linear-gradient(to bottom right, rgb(195, 255, 0), rgb(0, 255, 119));">
+        <div class="text-center fw-bold fs-2 mb-3" style="color: red;"><i>App performance</i></div>
+        <div class="row justify-content-evenly">
+            <a href="/dashboard/readers" class="col-3 bg-warning border border-2 border-black link-underline link-underline-opacity-0 rounded-4" style="height: 200px;"><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">Readers</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">{{calu_notification().readers|length}}</div>
+                </div>
+            </a>
+
+            <a href="/dashboard/requests" class="col-3 bg-warning border border-2 border-black link-underline link-underline-opacity-0 rounded-4" style="height: 200px;"><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">Requests</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">{{calu_notification().requested|length}}</div>
+                </div>
+            </a>
+
+            <a href="/dashboard/accesses" class="col-3 bg-warning border border-2 border-black link-underline link-underline-opacity-0 rounded-4" style="height: 200px;"><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">Patrons</div>
+                </div><br>
+                <div class="row">
+                    <div class="col-12 text-center fw-bold fs-1 text-black">{{calu_notification().accesses|length}}</div>
+                </div>
+            </a>
+
+        </div>
+        <hr class="mb-4">
+        {% set main_list = [] %}
+        {% set _ = main_list.append(['sections','books']) %}
+        {% set sections = calu_notification().sections %}
+        {% for i in range(sections|length) %}
+            {% set list = [] %}
+                {% set _ = list.append(sections[i].name|capitalize) %}
+                {% set _ = list.append(sections[i].books|length) %}
+            {% set _ = main_list.append(list) %}
+        {% endfor %}
+        {% set _ = main_list.append(['Not Added',remaining_books()|length]) %}
+        <div id="main_list_data" style="display: none;">{{ main_list|tojson|safe }}</div>
+
+        {% set bookname = [] %}
+        {% set bookrate = [] %}
+        {% for book in top_books() %}
+            {% set _ = bookname.append(book[0].name) %}
+            {% set _ = bookrate.append(book[1]) %}
+        {% endfor %}
+        <div id="bookname" style="display: none;">{{ bookname|tojson|safe }}</div>
+        <div id="bookrate" style="display: none;">{{ bookrate|tojson|safe }}</div>
+
+        <div class="row justify-content-between">
+            <div class="col-md-6 bg-transparent" style="height:260px;"><div id="myChart" style="height: 100%;"></div></div>
+            <div class="col-md-6 bg-transparent" style="height:260px;"><canvas id="mybarChart" style="height:0%;"></canvas></div>
+        </div>
+
+    </div>
+</div><br><br>
+
+<script>
+var bookname = document.getElementById('bookname').textContent;
+var bookrate = document.getElementById('bookrate').textContent;
+const xValues = JSON.parse(bookname);
+const yValues = JSON.parse(bookrate);
+console.log(xValues, yValues);
+var barColors = ["red", "green", "blue", "orange", "brown", "red", "green", "blue", "orange", "brown"];
+
+new Chart("mybarChart", {
+    type: "bar",
+    data: {
+        labels: xValues,
+        datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+        }]
+    },
+    options: {
+        legend: { display: false },
+        titleTextStyle: { fontSize: 17, bold: true },
+        title: {
+            display: true,
+            text: "Top 10 rated books",
+            fontSize: 25, bold: true, colors: 'black'
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    fontColor: "black",  // Set y-axis label color to black
+                    fontWeight: "bold",   // Set y-axis label font weight to bold
+                    fontSize: 15
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    fontColor: "black",  // Set x-axis label color to black
+                    fontWeight: "bold",   // Set x-axis label font weight to bold
+                    fontSize: 4
+                }
+            }]
+        }
+    }
+});
+
+
+google.charts.load('current', { 'packages': ['corechart'] });
+
+google.charts.setOnLoadCallback(drawChart);
+
+function drawChart() {
+    const main_list_data = document.getElementById('main_list_data').textContent;
+    const main_list = JSON.parse(main_list_data);
+    console.log(main_list);
+    const data = google.visualization.arrayToDataTable(main_list);
+
+    const options = {
+        title: 'Sections having books',
+        is3D: true,
+        chartArea: { width: '100%', height: '1100%', top: '15%', left: '10%' },
+        titleTextStyle: { fontSize: 25, bold: true },
+        legend: { textStyle: { fontSize: 14, colors: 'black', bold: true } },
+        backgroundColor: 'transparent'
+    };
+
+    const chart = new google.visualization.PieChart(document.getElementById('myChart'));
+    chart.draw(data, options);
+}
+</script>
+
+    
+{% endblock %}
+
+   
+
+
+
+
+

@@ -1,0 +1,158 @@
+<nav class="navbar navbar-expand-lg navbar-light fixed-top py-0 request-gradient">
+  <div class="container-fluid">
+      {% if current_user.is_authenticated %}
+          <a class="navbar-brand fw-bold fs-2 my-font" href="/{{current_user.label}}_home">Dashboard</a>   
+      {% else %}
+          <a class="navbar-brand fw-bold fs-2 my-font" href="/user_home">Dashboard</a>
+      {% endif %}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% if current_user.is_authenticated %}
+            {% if current_user.label == "librarian" %}
+              <ul class="navbar-nav me-auto ms-0 mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active fw-bold fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Add
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item fw-bold" href="/add_book">Add Books</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item fw-bold" href="/add_section">Add Sections</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item fw-bold" href="">Something else here</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active fw-bolder fs-5" href="/dashboard/stats">Stats</a>
+                </li>{% if page in ["All Books","All Sections","Section","All Readers","All Accesses","All Requests"] %}
+                <li class="nav-item">
+                    <button class="nav-link active fw-bold fs-5" type="button" onclick="filter()"><i class="fa-solid fa-filter text-dark ps-2"></i></button>
+                </li>              
+                {% endif %}
+              </ul>
+            {% elif current_user.label == "user" %}
+              <ul class="navbar-nav me-auto ms-0 mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle active fw-bold fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Open
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item fw-bold" href="/dashboard/allbooks">All Books</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item fw-bold" href="/dashboard/allsections">All Sections</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item fw-bold" href="/dashboard/mybooks">My Books</a></li>
+                  </ul>
+              </li>
+                <li class="nav-item">
+                  <a class="nav-link active fw-bolder fs-5" href="/dashboard/stats">Stats</a>
+                </li>{% if page in ["All Books","All Sections","Section","Statistics"] %}
+                <li class="nav-item">
+                    <button class="nav-link active fw-bold fs-5" type="button" onclick="filter()" ><i class="fa-solid fa-filter text-dark ps-2"></i></button>
+                </li>{% endif %}
+              </ul>
+            
+            {% endif %}
+            <ul class="navbar-nav me-auto ms-lg-5">
+              <form action="/search" method="get" class="d-flex" style="margin-right: 30%;"> 
+                <input class="form-control me-2 border border-dark border-2" type="search" name="query" placeholder="Search by Books and Sections name" aria-label="Search" style="width: 300px;" required> 
+                <button class="btn btn-dark fw-bold" type="submit">Search</button>
+              </form>
+            </ul>
+
+              <ul class="navbar-nav me-0 ms-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown me-2">
+                  <a class="nav-link active fw-bold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/display_profile/{{current_user.profile_path}}" alt="" style="border-radius: 50%; height: 32px; width: 32px; border: 2px solid rgb(7, 7, 7);">
+                  </a>
+                  <ul class="dropdown-menu" style="height:100px; width:5px;">
+                    <li><a class="dropdown-item fw-bold" href="/profile">View profile</a></li>
+                    <li><hr class="dropdown-divider fw-bold"></li>
+                    <li><a class="dropdown-item fw-bold" href="/logout">Logout</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item me-0">
+                    {% if current_user.label=="librarian" %}
+                      {% set count = calu_notification().requested|length %}
+                    {% else %}
+                      {% set count = current_user.requests|length + current_user.rejected_requests|length %}
+                    {% endif %}
+                  <button type="button" class="nav-link active {% if count!=0 %}ball{% endif %}" data-bs-toggle="modal" data-bs-target="#notification"><i class="fa-solid fa-bell fs-2"></i><span class="position-absolute top-10 start-1 translate-middle badge rounded-circle bg-danger">
+                  {{count}}
+                  </span></button>
+                </li>
+              </ul>
+
+        {% else %}
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item ms-2 text-center">
+              <a class="nav-link active fw-semibold fs-5" href="/user_login"><i>Login</i></a>
+            </li>
+            <li class="nav-item ms-2 text-center">
+              <a class="nav-link active fw-semibold fs-5" href="/signup"><i>Signup</i></a>
+            </li>
+            <li class="nav-item ms-2 text-center">
+                <a class="nav-link active fw-semibold fs-5" href="/librarian_login"><i>Librarian login</i></a>
+            </li>
+          </ul>
+        {% endif %}
+
+    </div>
+  </div>
+</nav>
+
+<div class="modal fade" id="notification" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content request-gradient">
+          <div class="modal-header">
+              <h1 class="modal-title fs-3 fw-bold text-dark" id="exampleModalLabel"><i>Notifications</i></h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body scrollable-content">
+            {% if current_user.label=="librarian" %}
+              <p class="fw-bold fs-4 text-center mb-0"><a href="/dashboard/requests" style="text-decoration: none; color: black;">{{ calu_notification().requested|length }} Requests</a></p>
+            {% else %}
+              <p class="text-dark fw-bold fs-4 text-center mb-0">{{ current_user.requests|length }} Requests <a href="/rm-all-requests" class="fa-solid fa-trash-can tdn" style="color: red;"></a></p>
+                {% for reqst in current_user.requests %}
+                  <div class="d-flex justify-content-between my-2 bg-light rounded-pill">
+                    <div class="col-4 text-center fw-semibold py-1 px-4" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                        {{ reqst.requested_book.name}}
+                    </div>
+                    <div class="col-4 text-center fw-semibold py-1">
+                        for {{ reqst.duration }}
+                    </div>
+                    <div class="col-2 text-end fw-bolder">
+                      <p class="fw-semibold text-secondary my-1 py-1" style="font-size: 11px;">{{ format_time_difference(reqst.time) }}</p>
+                    </div>
+                    <div class="col-2 text-center fw-bolder">
+                      <a href="/rm-request/{{ reqst.id}}" class="fa-solid fa-circle-minus fs-5 my-1 py-1 tdn" style="color: red;"></a>
+                    </div>
+                  </div>
+                {% endfor  %} <br>
+              <p class="text-dark fw-bold fs-4 text-center mb-0">{{  current_user.rejected_requests|length }} Rejections <a href="/rm-all-rejected" class="fa-solid fa-trash-can tdn" style="color: red;"></a></p>
+                {% for rejected in current_user.rejected_requests %}
+                  <div class="d-flex justify-content-between my-2 bg-light rounded-pill">
+                    <div class="col-4 text-center fw-bolder py-1 px-2" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+                        {{ rejected.rejected_book.name }}
+                    </div>
+                    <div class="col-4 text-center fw-semibold py-1">
+                        for {{ rejected.duration }}
+                    </div>
+                    <div class="col-2 text-end fw-bolder">
+                      <p class="fw-semibold text-secondary my-1 py-1" style="font-size: 11px;">{{ format_time_difference(rejected.time) }}</p>
+                    </div>
+                    <div class="col-2 text-center fw-bolder">
+                      <a href="/rm-rejected/{{ rejected.id}}" class="fa-solid fa-circle-check fs-5 my-1 py-1 tdn"></a>
+                    </div>
+                  </div>
+                {% endfor  %}
+            {% endif %}
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-dark fw-bold fs-6" data-bs-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>

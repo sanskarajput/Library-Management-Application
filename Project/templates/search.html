@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+{% if all_books or all_sections %}
+<div class="row">
+    <strong class="col fs-1 text-info text-center my-font ball">Results for <i class="text-light">{{query}}</i></strong>
+</div><br>
+{% else %}
+    <div class="d-flex justify-content-center">
+        <div class="col-auto rounded-circle fw-bold fs-1 text-center p-5 m-5 my-font italic request-gradient ball">No<br>results<br>found for<br><i class="text-warning">{{query}}</i></div>
+    </div>
+{% endif %}
+
+<div class="row">
+    {% for book in all_books %}
+        {% with %}
+        {% set looop=loop %}
+        <div class="col mb-5">
+            {% include "book.html" %}
+        </div>
+        {% endwith %}
+    {% endfor %}
+</div>
+<div class="row bg-light{% if all_books or all_sections %}{% else %}hidden{% endif %}" style="height: 2px; width:100%;"></div>
+<div class="row mt-5">
+    {% for section in all_sections %}
+        {% with %}
+        <div class="col mb-5">
+            {% set loopvar=loop %}
+            {% include "sections.html" %}
+        </div>
+        {% endwith %}
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+
+

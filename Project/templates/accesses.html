@@ -1,0 +1,107 @@
+{% if accesses %}
+    <br><br>
+    {% for access in accesses %}
+
+        {% set book = access.accessed_book %}
+          {% set looop=loop %}
+          <div class="row justify-content-between mb-5 that_col">
+            <div class="col-xl-3 col-md-4 mb-md-auto mb-sm-5">
+              {% include "book.html" %}
+            </div>
+
+            {% set users_list = book.granters %}
+            {% set users_tuple = make_tuple(users_list) %}
+              <!-- start black box -->
+              <div class="col-md-8">
+                <div id="carouselExampleIndicators{{looop.index}}" class="carousel slide h-100">
+
+                  <!-- adding button for sliding -->
+                  <div class="carousel-indicators bg-dark rounded-pill mb-2 mt-0 mx-1">
+                    {% for tuple in users_tuple %}
+                      {% set loopForTuple = loop %}
+                      <button type="button" data-bs-target="#carouselExampleIndicators{{looop.index}}" data-bs-slide-to="{{loopForTuple.index-1}}" aria-label="Slide {{loopForTuple.index}}" {% if loopForTuple.first %}class="active" aria-current="true"{% endif %}></button>
+                    {% endfor %}
+                  </div>
+
+                  <!-- creating each slide -->
+                  <div class="carousel-inner l-gradient rounded-4 h-100">
+
+                        {% for tuple in users_tuple %}
+                            {% set loopForTuple = loop %}
+                            <!-- start each slide of black box -->
+                            <div class="carousel-item {% if loopForTuple.first %}active{% endif %}">
+                                      
+                                <div class="d-flex justify-content-center">
+                                  {% for user in tuple %}
+                                      {% set loopvar = loop %}
+                                        <!-- start each user of slide -->
+                                        <div class="col-4 px-2 text-center m-3 Carousel-gradient rounded-2 delay hidden">
+                                          <div class="d-flex justify-content-center bg-transparent w-100 px-0 pt-2 pb-1">
+                                            <div class="col" style="height: 15rem; width: 16rem;">
+                                              <img class="rounded-4 border border-2 border-dark card-img-top" src="/display_profile/{{user.profile_path}}" alt="..."  style="height: 95%; width: 96%;">
+                                            </div>
+                                          </div>
+                                          <p class="my-font italic fs-6 my-1"><i class="fw-bolder">Username</i> : <i class="fw-semibold">{{ user.username }}</i></p>
+                                          <p class="fs-6 my-1"><i class="fw-bolder my-font italic">Added on</i> : <i class="fw-semibold">{{ user.time.strftime('%d-%m-%Y') }}</i></p>
+                                          <p class="fs-6 my-1"><i class="fw-bolder my-font italic">User type</i> : <i class="fw-semibold">{{ user.label|capitalize }}</i></p>
+                                          <p class="fs-6 mb-2 mt-1"><i class="fw-bolder my-font italic"></i><i class="fw-semibold">{{ remaining_time(user.id,book.id) }}</i></p>
+                                          <i class="fa-solid fa-circle-minus fs-4 text-info pointer pt-1 pb-3" data-bs-toggle="modal" data-bs-target="#revoke_{{looop.index}}_{{loopForTuple.index}}_{{loopvar.index}}"></i>
+                                        </div>
+
+                                        <div class="modal fade" id="revoke_{{looop.index}}_{{loopForTuple.index}}_{{loopvar.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                          <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                              <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Revoke Access</h1>
+                                                <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                                              </div>
+                                              <div class="modal-body">
+                                                Do you really want to Revoke Access of <strong><i>{{book.name}}</i></strong> from <strong><i>{{user.username}}</i></strong> ?
+                                                <br>
+                                                <div class="col-12 text-center text-info fs-6 fw-bolder">{{remaining_time(user.id,book.id)}}</div>
+                                              </div>
+                                              <div class="modal-footer">
+                                                <a href="/revoke/{{user.id}}/{{book.id}}" class="btn btn-outline-danger fw-bold border-2"><i>Confirm</i></a>
+                                                <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Cancel</i></button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <!-- end each user of slide -->
+                                  {% endfor %}
+                                </div>
+                                      
+                            </div>
+                            <!-- end each slide of black box -->
+                        {% endfor %}
+
+                        <!-- adding buttons -->
+                        {% for tuple in users_tuple %}
+                            {% set loopForTuple = loop %}
+                              {% if not(loopForTuple.first) %}
+                              <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators{{looop.index}}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                              </button>
+                              <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators{{looop.index}}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                              </button>
+                              {% endif %}
+                        {% endfor %}
+
+                  </div>
+
+                </div>
+              </div>
+              <!-- end black box -->
+          </div>
+
+    {% endfor %}
+
+
+{% else %}
+    <div class="d-flex justify-content-center">
+      <div class="col-auto rounded-circle fw-bold fs-1 text-center p-5 m-5 my-font italic request-gradient ball">No<br>Granted..</div>
+    </div>
+{% endif %}

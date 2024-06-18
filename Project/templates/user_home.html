@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="row">
+        <strong class="col fs-1 text-info text-center my-font ball italic">Recommend Books</strong>
+    </div><br>
+    <div class="row">
+        {% for book in top_books() %}
+        {% set book=book[0] %}
+            {% with %}
+            <div class="col mb-5">
+                {% set looop=loop %}
+                {% include "book.html" %}
+            </div>
+            {% endwith %}
+        {% endfor %}
+    </div>   
+
+{% endblock %}
+
+
+
+

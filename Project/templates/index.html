@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<br>
+<div class="row">
+    <div class="col text-center my-font text-light fw-bold ball-big" style="font-size:400%; -webkit-text-stroke-width: 2px; -webkit-text-stroke-color: black;">WELCOME&nbsp;&nbsp;TO&nbsp;&nbsp;LIBRARY !!</div>
+</div>
+
+<div class="bookForm delay hidden"><br><br><br>
+
+    <div class="row">
+
+        <div class="col-6"><br>
+            <div class="d-flex justify-content-end">
+                <div class="col-3" style="transform: perspective(300px) rotate3d(0,10,0,10deg) ;">
+                    <div class="row justify-content-center">
+                        <form action="/user_login" method="post" id="librarian_login" class="delay hidden">
+                        
+                            <div class="mb-2">
+                                <div class="text-center fw-bold my-font fs-2 italic"><strong>Login</strong></div>
+                            </div>
+                        
+                            <div class="mb-3 form-floating">
+                                <input type="text" class="form-control border border-dark" name="username" id="username" placeholder="username" required>
+                                <label for="username" class="form-label fw-bold">Username</label>
+                            </div>
+                        
+                            <div class="mb-3 form-floating">
+                                <input type="password" class="form-control border border-dark" name="password" id="password" placeholder="password" required>
+                                <label for="password" class="form-label fw-bold">Password</label>
+                            </div>
+                        
+                            <div class="mb-3 text-center">
+                                <button type="submit" class="btn btn-secondary border border-dark text-light fw-bold fs-5"><i>Login</i></button>
+                            </div>
+                        
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6"><br>
+            <div class="d-flex justify-content-start">
+                <div class="col-3" style="transform: perspective(300px) rotate3d(0,-1,0,16deg) ;">
+                    <div class="row justify-content-center">
+                        <form action="/signup" method="post" id="librarian_login" class="delay hidden">
+                        
+                            <div class="mb-2">
+                                <div class="text-center fw-bold my-font fs-2 italic"><strong>Signup</strong></div>
+                            </div>
+                        
+                            <div class="mb-3 form-floating">
+                                <input type="text" class="form-control border border-dark" name="username" id="username" placeholder="username" required>
+                                <label for="username" class="form-label fw-bold">Username</label>
+                            </div>
+                        
+                            <div class="mb-3 form-floating">
+                                <input type="password" class="form-control border border-dark" name="password" id="password" placeholder="password" required>
+                                <label for="password" class="form-label fw-bold">Password</label>
+                            </div>
+                        
+                            <div class="mb-3 text-center">
+                                <button type="submit" class="btn btn-secondary border border-dark text-white fw-bold fs-5"><i>Signup</i></button>
+                            </div>
+                        
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
