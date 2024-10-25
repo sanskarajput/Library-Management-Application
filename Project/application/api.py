@@ -229,7 +229,7 @@ class Sections_api(Resource):
 
 ########## endpoints for apis ##############
 
-api.add_resource(Books_api , "/api/course/<int:id>" , "/api/book")    
+api.add_resource(Books_api , "/api/book/<int:id>" , "/api/book")    
 api.add_resource(Sections_api, "/api/section/<int:id>", "/api/section")
 
 
