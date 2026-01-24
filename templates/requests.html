@@ -1,0 +1,104 @@
+{% if requests %}
+<div class="row bg-transparent m-1 p-2 rounded-pill fs-4 fw-bolder">
+  <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none delay hidden my-font" type="text" id="myInput" onkeyup="myrequestsFunction()" placeholder="Search for book, requester, section names OR duration ......." title="Type in a name">
+</div>
+<div class="row bg-warning m-1 p-2 mb-4 rounded-pill fs-4 fw-bolder delay hidden">
+  <div class="col-2 text-center text-danger"><i class="pointer">Book</i></div>|
+  <div class="col-2 text-center text-success"><i class="pointer">User</i></div>|
+  <div class="col-2 text-center text-primary"><i class="pointer">Section</i></div>
+  <div class="col text-center">duration</div>
+  <div class="col-2 text-end"><a href="" type="button" class="btn btn-outline-success border-2 fw-bold">Grant</a></div>
+  <div class="col-2 text-center"><a href="" type="button" class="btn btn-outline-danger border-2 fw-bold">Reject</a></div>
+</div>
+
+
+    {% for request in requests %}
+        <div class="row bg-light m-1 p-2 rounded-pill fs-4 fw-bolder delay hidden that_col">
+            <div class="col-2 text-center text-danger book{{loop.index}}" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"><i class="pointer" data-bs-toggle="modal" data-bs-target="#book{{loop.index}}">{{ request.requested_book.name }}</i></div>|
+            <div class="col-2 text-center text-success user{{loop.index}}" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"><i class="pointer" data-bs-toggle="modal" data-bs-target="#username{{loop.index}}">@{{ request.requester.username }}</i></div>|
+            {% if request.requested_book.from_section %}
+            <div class="col-2 text-center text-primary section{{loop.index}}" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"><i class="pointer" data-bs-toggle="modal" data-bs-target="#section{{loop.index}}">{{request.requested_book.from_section.name}}</i></div>
+            {% else %}
+            <div class="col text-center"></div>
+            {% endif %}
+            <div class="col text-center duration{{loop.index}}">for {{ request.duration }}</div>
+            <div class="col-2 text-end"><a href="/grant/{{ request.user_id }}/{{ request.book_id }}" type="button" class="btn btn-outline-success border-2 fw-bold">Grant</a></div>
+            <div class="col-2 text-center"><a href="/reject/{{ request.user_id }}/{{ request.book_id }}" type="button" class="btn btn-outline-danger border-2 fw-bold">Reject</a></div>
+        </div><br>
+
+        <!-- book model -->
+        <div class="modal fade" id="book{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="width:350px;">
+            <div class="modal-content request-gradient">
+              <div class="modal-body m-0 p-4">
+                  {% set book = request.requested_book %}
+                  <div class="d-flex justify-content-center">
+                    <img class="col-12 card-img-top mb-3 rounded-4" src="/display_book/{{book.image_path}}" alt="" height="250px">
+                  </div>
+                  <p class="my-font italic fs-6"><i class="fw-bolder">Title</i> : <i class="fw-light">{{ book.name }}</i></p>
+                  <p class="my-font italic fs-6"><i class="fw-bolder">Author</i> : <i class="fw-light">{{ book.author }}</i></p>
+                  <p class="fs-6"><i class="fw-bolder my-font italic">Added on</i> : <i class="fw-semibold">{{ book.time.strftime('%d-%m-%Y') }}</i></p>
+                  <p class="fs-6"><i class="fw-bolder my-font italic">Rating</i> : <i class="fw-semibold">{{ calu_avg(book) }}</i></p>
+                  <p class="my-font italic fs-6"><i class="fw-bolder">Description</i> : <i class="fw-light">{{ book.description }}</i></p>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <!-- username model -->
+        <div class="modal fade" id="username{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="width:350px;">
+            <div class="modal-content request-gradient">
+              <div class="modal-body m-0 p-4">
+                {% set user = request.requester %}
+                  <div class="d-flex justify-content-center">
+                    <img class="col-12 card-img-top mb-3 rounded-4" src="/display_profile/{{user.profile_path}}" alt="" height="250px">
+                  </div>
+                  <p class="my-font italic fs-6"><i class="fw-bolder">Username</i> : <i class="fw-semibold">{{ user.username }}</i></p>
+                  <p class="fs-6"><i class="fw-bolder my-font italic">Added on</i> : <i class="fw-semibold">{{ user.time.strftime('%d-%m-%Y') }}</i></p>
+                  <p class="fs-6"><i class="fw-bolder my-font italic">User type</i> : <i class="fw-semibold">{{ user.label|capitalize }}</i></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      
+        {% if request.requested_book.from_section %}
+        <!-- section model -->
+        <div class="modal fade" id="section{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" style="width:350px;">
+            <div class="modal-content request-gradient">
+              <div class="modal-body m-0 p-4">
+                {% set section = request.requested_book.from_section %}
+                  <div class="d-flex justify-content-center">
+                    <a href="/section/{{section.id}}"><img class="col-12 card-img-top mb-3 rounded-4" src="/display_section/{{section.image_path}}" alt="" height="250px"></a>
+                  </div>
+                  <p class="my-font italic fs-6"><i class="fw-bolder">Title</i> : <i class="fw-light">{{ section.name }}</i></p>
+                  <p class="fs-6"><i class="fw-bolder my-font italic">Added on</i> : <i class="fw-semibold">{{ section.time.strftime('%d-%m-%Y') }}</i></p>
+                  <p class="my-font fs-6"><i class="fw-bolder my-font italic">Description</i> : <i class="fw-light">{{ section.description }}</i></p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+
+{% else %}
+
+
+    <div class="d-flex justify-content-center">
+      <div class="col-auto rounded-circle fw-bold fs-1 text-center p-5 m-5 my-font italic request-gradient ball">No <br>requests..</div>
+    </div>
+
+
+{% endif %}

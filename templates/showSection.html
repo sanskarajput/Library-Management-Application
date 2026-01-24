@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-evenly">
+  <div class="col-xl-3 mb-5 request-gradient delay hidden" style="min-height: 300px; border-radius: 10px;"><br>
+    <div class="row">
+      <div class="col text-center">
+        <img class="rounded-3 border border-3 border-dark card-img-top" src="/display_section/{{ section.image_path }}" width="400px" height="250px">
+      </div>
+    </div>
+    <div class="row pt-2">
+      <div class="col">
+        <h5 class="fw-bold text-dark my-font italic">Section : {{ section.name }}</h5>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h6 class="fw-bold text-dark"><text class="my-font italic">Added on :</text> <text class="italic">{{ section.time.strftime('%d-%m-%Y') }}</text></h6>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="d-flex justify-content-between"><text class="col-auto fw-bold fs-6 text-dark my-font italic">Description :</text> <i class="col-auto fa-solid fa-volume-high text-dark pointer fs-5" onclick="speakerForDescription(this)"></i><i class='col-auto text-warning fw-semibold display-none'> for stop press key `m`</i></div>
+        <br><p class="fw-normal fs-6 text-dark my-font">{{ section.description }}</p>
+      </div>
+    </div>
+
+    {% if current_user.label == 'librarian' %}
+    <hr class="mb-4">
+    <div class="d-flex justify-content-between">
+      <div class="col-3 text-center">
+        <button type="button" class="btn btn-warning fw-bold border-3" data-bs-toggle="modal" data-bs-target="#addbooktosection">+Book</button>
+      </div>
+      <div class="col-3 text-center">
+        <button type="button" class="btn btn-success fw-bold border-3" data-bs-toggle="modal" data-bs-target="#edit">Edit</button>
+      </div>
+      <div class="col-3 text-center">
+        <button type="button" class="btn btn-danger fw-bold border-3" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
+      </div>
+    </div>
+    {% endif %}
+    <br><br>
+
+
+  </div>
+  <div class="col-8">
+    <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for book or author names ......." title="Type in a name">
+    <div class="row" id="all">
+      {% set books = section.books %}
+      {% for book in books %}
+        {% with %}
+        <div class="col mb-5 that_col" >
+            {% set looop=loop %}
+            {% include "book.html" %}
+        </div>
+        {% endwith %}
+    {% endfor %}
+    </div>
+
+  </div>
+
+
+  {% if current_user.label == 'librarian' %}
+  <!-- addbooktosection modal  -->
+  <div class="modal fade delay hidden" id="addbooktosection" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm modal-dialog-scrollable">
+      <div class="modal-content addform-gradient">
+        <div class="modal-header">
+          <h1 class="modal-title fs-4 fw-bold text-dark" id="exampleModalLabel">Add Books</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/addbooktosection/{{section.id}}" method="POST" id="addbooktosection" class="modal-body fs-6 fw-semibold text-dark scrollable-content">
+            {% if remaining_books() %}
+            <div class="fw-bold">Add books to {{section.name}} ...</div><br>
+                {% for book in remaining_books() %}
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="{{book.id}}" id="flexCheckDefault{{loop.index}}" name="books">
+                    <label class="form-check-label" for="flexCheckDefault{{loop.index}}">
+                      {{ book.name }}
+                    </label>
+                </div>
+
+                {% endfor %}
+            {% else %}
+                <p class="fw-bold fs-4 my-font">Books not available</p><br>
+                <a href="/add_book" class="tdn text-dark fw-bold">Go to add books . . . . </a>
+            {% endif %}
+            <button type="submit" id="targetElementFromShowSection" class="btn btn btn-outline-info fw-bold fs-6 border-2" data-bs-dismiss="modal" style="display: none;"><i>Add</i></button>
+        </form>
+          <div class="modal-footer">
+            <button type="button" onclick="triggerElementFromShowSection()" class="btn btn btn-outline-info fw-bold fs-6 border-2"><i>Add</i></button>
+            <button type="button" class="btn btn-outline-dark fw-bold fs-6 border-2" data-bs-dismiss="modal">Close</button>
+          </div>
+      </div>
+    </div>
+  </div> 
+
+
+<!-- edit modal  -->
+    <div class="modal fade delay hidden" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content addform-gradient">
+              <div class="modal-header">
+                  <h1 class="modal-title fs-4 fw-bold text-dark italic" id="exampleModalLabel">Edit Section</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form action="/edit_section/{{section.id}}" method="POST" id="edit_section" enctype="multipart/form-data">
+                <div class="modal-body">
+
+                  <div class="mb-3 form-floating">
+                    <input type="text" class="form-control border border-dark" name="name" id="name" placeholder="name" value="{{section.name}}">
+                    <label for="name" class="form-label fw-bold">Name</label>
+                  </div>
+            
+                  <div class="mb-3 form-floating">
+                    <textarea type="text" class="form-control border border-dark" name="description" id="description" placeholder="description">{{section.description}}</textarea>
+                    <label for="description" class="form-label fw-bold">Description</label>
+                  </div>
+              
+                  <div class="mb-3">
+                      <label for="image" class="form-label m-0 fw-bold mb-0">Choose a pictureFile</label>
+                      <input type="file" class="form-control form-control-lg border border-dark" name="image" id="image" accept="image/*">
+                  </div><hr>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-outline-light fw-bold border-2">Edit</button>
+                  <button type="button" class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal">Close</button>
+                </div>
+              </form>
+          </div>
+      </div>
+    </div>
+
+
+
+<!-- delete modal  -->
+    <div class="modal fade" id="delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h1 class="modal-title fs-4 fw-bold text-dark" id="exampleModalLabel">Delete Conformation</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  Do you really want to <strong><i>Detete</i></strong> section <strong><i>{{section.name}}</i></strong> ?
+              </div>
+              <div class="modal-footer">
+                  <a href="/delete_section/{{section.id}}" class="btn btn-outline-info fw-bold border-2">Delete</a>
+                  <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal">Close</button>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,447 @@
+<div class="d-flex justify-content-{% if looop.first and looop.last %}start{% else %}center{% endif %}">
+  <div class="card delay hidden bg-light" style="width: 17rem;">
+    {% if current_user.label=="librarian" %}
+      <!-- pdf model -->
+      <img src="/display_book/{{ book.image_path }}" class="card-img-top pointer" alt="..." data-bs-toggle="modal" data-bs-target="#pdf{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" height="180px">
+    {% else %}
+        {% if book_availability(book.id,current_user.id) %}
+          <!-- pdf model -->
+          <img src="/display_book/{{ book.image_path }}" class="card-img-top pointer" alt="..." data-bs-toggle="modal" data-bs-target="#pdf{{looop.index}}" height="180px;">
+        {% else %}
+        <img src="/display_book/{{ book.image_path }}" class="card-img-top" alt="..." height="180px">
+        {% endif %}
+    {% endif %}
+      <div class="card-body px-2 py-1">
+        <h5 class="card-title my-0 my-font"><text class="fw-bold fs-5">Title :</text> <text class="fw-normal italic title{{looop.index}}" style="font-size:85%;">{{ book.name }}</text></h5>
+        <h5 class="card-title my-0 my-font fs-5"><text class="fw-bold">Author :</text><text class="fw-normal italic author{{looop.index}}" style="font-size:85%;"> {{ book.author }}</text></h5>
+        <h5 class="card-title my-0 fs-5"><text class="fw-bold my-font italic">Added on :</text><text class="fw-normal fs-6"> {{ book.time.strftime('%d-%m-%Y') }}</text><text class="fs-6"></text></h5>
+        <!-- description model  -->
+        <h6 class="card-title my-font pointer mt-1" data-bs-toggle="modal" data-bs-target="#description{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" style="overflow-y: hidden; max-height: 75px; min-height: 75px;"><text class="fw-bolder fs-6 italic text-primary">Description :</text> <text class="fw-normal" style="font-size:90%;">{{ book.description }}</text></h6>
+      </div>
+
+      <ul class="list-group list-group-flush">
+
+        <li class="list-group-item bg-light">
+          <div class="row">
+            <div class="col-8">
+              {% if current_user.label=="librarian" %}
+              <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/1"></a>
+              <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/2"></a>
+              <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/3"></a>
+              <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/4"></a>
+              <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/5"></a>
+              {% else %}
+                {% if can_rate(book.id,current_user.id) %}
+                  <a class="fa-solid fa-star fs-6 tdn mydarkred" href="/rate/{{ book.id }}/1"></a>
+                  <a class="fa-solid fa-star fs-6 tdn mydarkred" href="/rate/{{ book.id }}/2"></a>
+                  <a class="fa-solid fa-star fs-6 tdn mydarkred" href="/rate/{{ book.id }}/3"></a>
+                  <a class="fa-solid fa-star fs-6 tdn mydarkred" href="/rate/{{ book.id }}/4"></a>
+                  <a class="fa-solid fa-star fs-6 tdn mydarkred" href="/rate/{{ book.id }}/5"></a>
+                {% else %}
+                  <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/1"></a>
+                  <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/2"></a>
+                  <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/3"></a>
+                  <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/4"></a>
+                  <a class="fa-solid fa-star fs-6 tdn pen myred" href="/rate/{{ book.id }}/5"></a>
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="col-4 text-end fw-bold fs-6">
+              {{ calu_avg(book) }}
+              <!-- book.ratings|sum(attribute='rate')/book.ratings|length  -->
+            </div>
+          </div>
+        </li>
+        
+        <li class="list-group-item bg-light">
+          <div class="row">
+
+            <div class="col-4 text-start">
+              {% if current_user.label=="librarian" %}
+                  <!-- edit model  -->
+                  <i class="fa-solid fa-pen-to-square fs-4 text-success pointer" data-bs-toggle="modal" data-bs-target="#edit{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}"></i>
+              {% else %}
+                {% if book_availability(book.id,current_user.id) %}
+                  <!-- pdf model  -->
+                  <i class="fa-solid fa-book-open-reader fs-4 text-success pointer" data-bs-toggle="modal" data-bs-target="#pdf{{looop.index}}"></i>
+                {% elif request_exist(book.id,current_user.id) %}
+                  <!-- rm_request model -->
+                  <i class="fa-solid fa-book-bookmark fs-4 pointer text-primary" data-bs-toggle="modal" data-bs-target="#rm_request{{looop.index}}"></i>
+                {% else %}
+                  <!-- request model -->
+                  <i class="fa-solid fa-book fs-4 text-warning pointer" data-bs-toggle="modal" data-bs-target="#request{{looop.index}}"></i>
+                {% endif %}
+              {% endif %}
+            </div>
+
+
+            <div class="col-4 text-center">
+              {% if current_user.label=="librarian" %}
+                  {% if page == "Section" %}
+                  <!-- removebookfromsection model  -->
+                  <i class="fa-solid fa-circle-minus fs-4 text-primary pointer" data-bs-toggle="modal" data-bs-target="#removebookfromsection{{looop.index}}"></i>
+
+                  {% elif page == "All Readers" %}
+                  <!-- revokeaccess -->
+                  <i class="fa-solid fa-circle-minus fs-4 text-primary pointer" data-bs-toggle="modal" data-bs-target="#revoke{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}"></i>
+                  {% endif %}
+              {% endif %}
+            </div>
+
+
+            <div class="col-4 text-end">
+              {% if current_user.label=="librarian" %}
+              <!-- deletebook model  -->
+              <i class="fa-solid fa-trash-can fs-4 mydarkred pointer" data-bs-toggle="modal" data-bs-target="#deletebook{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}"></i>
+              {% else %}
+                {% if book_availability(book.id,current_user.id) %}
+                  <!-- return_book model  -->
+                  <i class="fs-6 fw-semibold text-primary tdn pointer" data-bs-toggle="modal" data-bs-target="#return_book{{looop.index}}">Return</i>
+                {% elif page=='Statistics' %}  
+                  <!-- rmCompleted model  -->
+                  <i class="fa-solid fa-circle-minus fs-4 fw-semibold mydarkred pointer" data-bs-toggle="modal" data-bs-target="#rmCompleted{{looop.index}}"></i>
+                {% endif %}
+              {% endif %}
+            </div>
+
+          </div>
+        </li>
+
+        <li class="list-group-item text-center bg-light">
+          <!-- comment model -->
+          <i class="fa-solid fa-comments fs-4 text-dark pointer" data-bs-toggle="modal" data-bs-target="#comment{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}"></i>
+        </li>
+
+      </ul>
+  </div>
+      <!-- pdf model -->
+      <div class="modal fade delay hidden" id="pdf{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="pdfexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+          <div class="modal-content cd-gradient">
+            <div class="row modal-header my-0">
+                <h1 class="col-4 modal-title fs-5 text-white" id="pdfexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}">{{ book.name }} | {{ book.author }}</h1>
+                <i class="col-4 text-center"><i class="fa-solid fa-volume-high text-warning pointer fs-5" onclick="speaker(this)"></i><i class='text-light display-none'> for stop press key `m`</i></i>
+                <button type="button" class="col-4 me-2 btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body m-0 p-0">
+                <embed src="/send/{{ book.pdf_path }}#toolbar=0" type="application/pdf" width="100%" height="99%">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-danger fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- description model  -->
+      <div class="modal fade" id="description{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" tabindex="-1" aria-labelledby="descriptionexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content cd-gradient">
+            <div class="modal-header my-0">
+              <h1 class="modal-title fs-5 text-white" id="descriptionexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}">{{ book.name }} | {{ book.author }}</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between text-white my-font"><text class="col-auto fw-bold fs-6">Description :</text> <i class="col-auto fa-solid fa-volume-high text-info pointer fs-5" onclick="speakerForDescription(this)"></i><i class='col-auto text-primary display-none'> for stop press key `m`</i></div>
+                <br><p class="fw-normal fs-6 text-light my-font">{{ book.description }}</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-danger fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- comment model  -->
+      <div class="modal fade" id="comment{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" tabindex="-1" aria-labelledby="commentexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+          <div class="modal-content cd-gradient">
+
+            <div class="modal-header my-0">
+              <h1 class="modal-title fs-5 text-white" id="commentexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}">{{ book.name }} | {{ book.author }}</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="row justify-content-center">
+              <form action="/comment/{{book.id}}" method="post" id="comment{{looop.index}}" class="col-12 rounded login-gradient">
+                <div class="d-flex justify-content-between m-2">
+                  <div class="col-9 p-0">
+                    <div class="form-floating">
+                      <textarea type="text" class="form-control form-control-sm border border-dark" name="comment" id="comment" placeholder="comment...." required></textarea>
+                      <label for="comment" class="form-label fw-bold my-font italic">Your Feedback....</label>
+                    </div>
+                  </div>
+                  <div class="col-3 text-end p-0 align-self-center">
+                      <button type="submit" class="btn btn-outline-dark border-dark border-4 fw-bold fs-6"><i>Submit</i></button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-body text-white scrollable-content">
+              {% for cmt in Random(book.comments) %}
+              <div><text class="fw-bolder fs-6 text-{% if cmt.commenter.label=='librarian' %}warning{% else %}info{% endif %}">@{{ cmt.commenter.username }}</text> <text class="text-secondary fw-bold" style="font-size:12px;">{{format_time_difference(cmt.time)}}</text> <br><p class="fw-semibold fs-6">{{ cmt.comment }}</p></div>
+                  {% if not(looop.last) %}<hr>{% endif %}
+              {% endfor %} 
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-danger fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
+      {% if current_user.label=="librarian" %}
+          <!-- edit model  -->
+          <div class="modal fade delay hidden" id="edit{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="editexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content addform-gradient">
+                <div class="modal-header my-0">
+                  <h1 class="modal-title fs-5 fw-bold text-dark" id="editexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}">Edit Book</h1>
+                  <button type="button" class="btn-close btn btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/edit_book/{{ book.id }}" method="post" id="edit_book{{looop.index}}" enctype="multipart/form-data">
+                  <div class="modal-body">
+
+                    <div class="mb-3 form-floating">
+                      <input type="text" class="form-control border border-dark" name="name" id="name" placeholder="name" value="{{book.name}}">
+                      <label for="name" class="form-label fw-bold">Name</label>
+                    </div>
+              
+                    <div class="mb-3 form-floating">
+                      <input type="text" class="form-control border border-dark" name="author" id="author" placeholder="author" value="{{book.author}}">
+                      <label for="author" class="form-label fw-bold">Author</label>
+                    </div>
+              
+                    <div class="mb-3 form-floating">
+                      <textarea type="text" class="form-control border border-dark" name="description" id="description" placeholder="description">{{book.description}}</textarea>
+                      <label for="description" class="form-label fw-bold">Description</label>
+                    </div>
+              
+                    <div class="row mb-2">
+                      <div class="col-6">
+                          <label for="image" class="form-label m-0 p-0 fw-bold">Choose a pictureFile</label>
+                          <input type="file" class="form-control border border-dark" name="image" id="image" accept="image/*">
+                      </div>
+              
+                      <div class="col-6">
+                          <label for="section"><strong>Select Section</strong></label>
+                          <select name="section" id="section" class="form-select mb-3 border border-dark">
+                            {% if book.from_section == None %}
+                              <option  value="" selected disabled hidden>None</option><hr>
+                            {% else %}
+                              <option value="" selected disabled hidden>{{ book.from_section.name }}</option>
+                              <option class="fs-5 fw-bold text-dark" value="none">None</option><hr>
+                            {% endif %}
+                              {% for section in all_sectionss() %}
+                                {% if section.id != book.section_id %}
+                                <option class="fs-5 fw-bold text-info" value="{{ section.id }}">{{ section.name }}</option> {% if not(looop.last) %}<hr>{% endif %}
+                                {% endif %} 
+                              {% endfor %}
+
+                          </select>
+                      </div>
+                    </div>
+              
+                    <div class="mb-3">
+                      <label for="pdf" class="form-label m-0 fw-bold">Choose a pdfFile</label>
+                      <input type="file" class="form-control border border-dark" name="pdf" id="pdf" accept=".pdf">
+                    </div>
+
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn btn-outline-light fw-bold border-2"><i>Edit</i></button>
+                    <button type="button" class="btn btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- deletebook model  -->
+          <div class="modal fade" id="deletebook{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="deletebookexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header my-0">
+                  <h1 class="modal-title fs-5" id="deletebookexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}">Delete Book</h1>
+                  <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Do you really want to <strong><i>Delete</i></strong> book <strong><i>{{book.name}}</i></strong> ?
+                </div>
+                <div class="modal-footer">
+                  <a href="/delete_book/{{book.id}}" class="btn btn-outline-danger fw-bold border-2"><i>Delete</i></a>
+                  <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% if page == "Section" %}
+
+          <!-- removebookfromsection model  -->
+          <div class="modal fade" id="removebookfromsection{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="removebookfromsectionexampleModalLabel{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="removebookfromsectionexampleModalLabel{{looop.index}}">Remove Book</h1>
+                  <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Do you really want to Remove book <strong><i>{{book.name}}</i></strong> from section <strong><i>{{section.name}}</i></strong> ?
+                </div>
+                <div class="modal-footer">
+                  <a href="/removebookfromsection/{{book.id}}" class="btn btn-outline-danger fw-bold border-2"><i>Remove</i></a>
+                  <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {% elif page == "All Readers" %}
+
+          <!-- revokeaccess -->
+          <div class="modal fade" id="revoke{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="revokeaccessexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="revokeaccessexampleModalLabel{% if current_user.label=='librarian' and page == 'All Readers' %}_{{loopVar.index}}_{% endif %}{{looop.index}}">Confirm Revoke Access</h1>
+                  <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Do you really want to Revoke Access of <strong><i>{{book.name}}</i></strong> from <strong><i>{{reader.username}}</i></strong> ?
+                  <br>
+                  <div class="col-12 text-center text-info fs-6 fw-bolder">{{remaining_time(reader.id,book.id)}}</div>
+                </div>
+                <div class="modal-footer">
+                  <a href="/revoke/{{reader.id}}/{{book.id}}" class="btn btn-outline-danger fw-bold border-2"><i>Confirm</i></a>
+                  <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Cancel</i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {% endif %}
+      
+      {% else %}
+          
+          {% if book_availability(book.id,current_user.id) %}
+          <!-- return_book model  -->
+          <div class="modal fade" id="return_book{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="return_bookexampleModalLabel{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="return_bookexampleModalLabel{{looop.index}}">Return Book</h1>
+                  <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Do you really want to Return book <strong><i>{{book.name}}</i></strong> ?
+                  <br>
+                  <div class="text-info text-center fw-bolder fs-6">{{remaining_time(current_user.id,book.id)}}</div>
+                </div>
+                <div class="modal-footer">
+                  <a href="/return_book/{{book.id}}" class="btn btn-outline-success fw-bold border-2">Return</a>
+                  <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% elif request_exist(book.id,current_user.id) %}
+          <!-- rm_request model -->
+          <div class="modal fade" id="rm_request{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="rm_requestexampleModalLabel{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="rm_requestexampleModalLabel{{looop.index}}">Remove Request</h1>
+                  <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Do you really want to Remove Request for <strong><i>{{book.name}}</i></strong> book ?
+                  <!-- <br> -->
+                  <!-- <div class="text-info text-center fw-bolder fs-6">format_time_difference(current_user.id,book.id)</div> -->
+                </div>
+                <div class="modal-footer">
+                  <a href="/rm-requestBybookid/{{book.id}}" class="btn btn-outline-success fw-bold border-2">Remove</a>
+                  <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <!-- request model -->
+          <div class="modal fade delay hidden" id="request{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="requestexampleModalLabel{{looop.index}}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+              <div class="modal-content request-gradient">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5 fw-bold text-dark" id="requestexampleModalLabel{{looop.index}}">{{ book.name }} | {{ book.author }}</h1>
+                  <button type="button" class="btn-close btn btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/request_book/{{ book.id }}" method="post" id="request_book{{looop.index}}">
+                  <div class="modal-body">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="6hour_{{looop.index}}" value="6 hour">
+                      <label class="form-check-label fw-bolder" for="6hour_{{looop.index}}">6 hours</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="12hour_{{looop.index}}" value="12 hour">
+                      <label class="form-check-label fw-bolder" for="12hour_{{looop.index}}">12 hours</label>
+                    </div><br>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="1day_{{looop.index}}" value="1 day" checked>
+                      <label class="form-check-label fw-bolder" for="1day_{{looop.index}}">1 day</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="2day_{{looop.index}}" value="2 day">
+                      <label class="form-check-label fw-bolder" for="2day_{{looop.index}}">2 day</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="4day_{{looop.index}}" value="4 day">
+                      <label class="form-check-label fw-bolder" for="4day_{{looop.index}}">4 day</label>
+                    </div><br>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="1week_{{looop.index}}" value="1 week">
+                      <label class="form-check-label fw-bolder" for="1week_{{looop.index}}">1 week</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="duration" id="2week_{{looop.index}}" value="2 week">
+                      <label class="form-check-label fw-bolder" for="2week_{{looop.index}}">2 week</label>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn btn-outline-info fw-bold border-2" data-bs-dismiss="modal"><i>Make request</i></button>
+                    <button type="button" class="btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {% if not(book_availability(book.id,current_user.id)) %}
+              {% if page=='Statistics' %}
+                  <!-- rmCompleted model  -->
+                  <div class="modal fade" id="rmCompleted{{looop.index}}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="rmCompletedexampleModalLabel{{looop.index}}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="rmCompletedexampleModalLabel{{looop.index}}">Remove book from Completed Books List</h1>
+                          <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          Do you really want to Remove book <strong><i>{{book.name}}</i></strong> from your Completed Books List ?
+                          <br>
+                        </div>
+                        <div class="modal-footer">
+                          <a href="/rmCompleted/{{book.id}}" class="btn btn-outline-success mydarkred fw-bold border-2">Confirm</a>
+                          <button type="button" class="btn btn-outline-secondary fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              {% endif %}
+          {% endif %}
+      
+      {% endif %}
+    
+</div>

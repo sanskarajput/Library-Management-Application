@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+{% if page=="My Books" %}
+    <div class="d-flex justify-content-center">
+        <div class="col my-font italic fs-1 fw-bold text-center text-primary"><span class="bg-light px-3 rounded-4 py-2">Your Current Books</span></div>
+    </div><br><br>
+    {% if current_user.granted %}
+        <div class="row">
+            {% for book in current_user.granted %}
+                {% with %}
+                <div class="col mb-5">
+                    {% set looop=loop %}
+                    {% include "book.html" %}
+                </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="d-flex justify-content-center">
+            <div class="col-auto rounded-circle fw-bold fs-1 text-center p-5 m-5 my-font italic request-gradient ball">you<br class="mb-1">don't have<br class="mb-1">access of any book<hr><br></div>
+        </div>
+    {% endif %}
+
+{% elif page=="All Books" %}
+    <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none my-font" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for book or author names ......." title="Type in a name">
+    <div class="row" id="all">
+        {% for book in books %}
+            {% with %}
+            {% set looop=loop %}
+            <div class="col mb-5 that_col">
+                {% include "book.html" %}
+            </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+
+{% elif page=="All Sections" %}
+    <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none my-font" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for section names ......." title="Type in a name">
+    <div class="row" id="all">
+        {% for section in sections %}
+            {% with %}
+            <div class="col mb-5 that_col">
+                {% set loopvar=loop %}
+                {% include "sections.html" %}
+            </div>
+            {% endwith %}
+        {% endfor %}
+    </div> 
+
+{% elif page=="All Readers" %}
+    <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none my-font" type="text" id="myInput" onkeyup="myreadersFunction()" placeholder="Search for Reader names ......." title="Type in a name">
+    <div class="row" id="all">
+        {% include "readers.html" %}
+    </div>
+
+{% elif page=="All Requests" %}
+    <div class="row" id="all">
+        {% include "requests.html" %}
+    </div>
+
+{% elif page=="All Accesses" %}
+    <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none my-font" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for Book names or author names ......." title="Type in a name">
+    <div class="row" id="all">
+        {% include "accesses.html" %}
+    </div>
+
+{% elif page == "Statistics" %}
+    {% if current_user.label=='user' %}
+        {% if current_user.completed_books %}
+            <div class="d-flex justify-content-center">
+                <div class="col my-font italic fs-1 fw-bold text-center text-dark"><span class="addform-gradient px-3 rounded-4 py-2">Your Completed Books</span></div>
+            </div><br>
+            <input class="border-4 border-danger-subtle bg-light fw-semibold text-center text-dark rounded-4 display-none my-font" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for book or author names ......." title="Type in a name">
+            <br>
+            <div class="row" id="all">
+                {% for book in current_user.completed_books %}
+                    {% with %}
+                    {% set looop=loop %}
+                    <div class="col mb-5 that_col">
+                        {% include "book.html" %}
+                    </div>
+                    {% endwith %}
+                {% endfor %}
+            </div><b><br><br><br><br><br><br><br><br><br>
+        {% endif %}
+    {% elif current_user.label=='librarian' %}
+        <!-- Demanding books chart -->
+        <div id="bookname" style="display: none;">{{ bookname|tojson|safe }}</div>
+        <div id="issued" style="display: none;">{{ issued|tojson|safe }}</div>
+        <div class="row justify-content-center">
+            <div class="col-10 bg-light rounded-4 m-5"><canvas id="myissuebarChart" style="height: 100%;"></canvas></div>
+        </div>
+        <script>
+        var bookname = document.getElementById('bookname').textContent;
+        var issued = document.getElementById('issued').textContent;
+        const xValues = JSON.parse(bookname);
+        const yValues = JSON.parse(issued);
+
+        var predefinedColors = ["red", "green", "blue", "orange", "brown"];
+
+
+            var issuebarColors = [];
+            for (var i = 0; i < xValues.length; i++) {
+                issuebarColors.push(predefinedColors[i % predefinedColors.length]);
+            }
+
+            console.log(xValues, yValues, issuebarColors);
+
+        new Chart("myissuebarChart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: issuebarColors,
+                    data: yValues
+                }]
+            },
+            options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: "All Demanding Books",
+                    fontSize: 40, bold: true, colors: 'black'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            fontColor: "black",
+                            fontWeight: "bold",
+                            fontSize: 15
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: "black",
+                            fontWeight: "bold",
+                            fontSize: 15
+                        }
+                    }]
+                }
+            }
+        });
+        </script><br><br><br>
+    {% endif %}
+        <div id="book_name" style="display: none;">{{ book_name|tojson|safe }}</div>
+        <div id="average_rating" style="display: none;">{{ average_rating|tojson|safe }}</div>
+        <!-- chart based on rating -->
+        <div class="row justify-content-center">
+            <div class="col-11 bg-light rounded-4 mb-5"><canvas id="myratebarChart" style="height: 100%;"></canvas></div>
+        </div>
+        <script>
+        var book_name = document.getElementById('book_name').textContent;
+        var average_rating = document.getElementById('average_rating').textContent;
+        const xxValues = JSON.parse(book_name);
+        const yyValues = JSON.parse(average_rating);
+
+        var predefinedColors = ["red", "green", "blue", "orange", "brown"];
+
+            // Generating dynamic bar colors based on the predefined array
+            var ratebarColors = [];
+            for (var i = 0; i < xxValues.length; i++) {
+                ratebarColors.push(predefinedColors[i % predefinedColors.length]);
+            }
+
+            console.log(xxValues, yyValues, ratebarColors);
+
+        new Chart("myratebarChart", {
+            type: "bar",
+            data: {
+                labels: xxValues,
+                datasets: [{
+                    backgroundColor: ratebarColors,
+                    data: yyValues
+                }]
+            },
+            options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: "All Books Ratings",
+                    fontSize: 40, bold: true, colors: 'black'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            fontColor: "black",
+                            fontWeight: "bold",
+                            fontSize: 15
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: "black",
+                            fontWeight: "bold",
+                            fontSize: 15
+                        }
+                    }]
+                }
+            }
+        });
+        </script>
+{% endif %}
+
+
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+    <br>
+    <div class="row justify-content-center">
+        <form action="/add_book" method="POST" id="add_book" enctype="multipart/form-data" class="col-sm-10 col-md-8 col-lg-6 col-xl-4 rounded addform-gradient delay hidden">
+
+            <div class="mb-2">
+                <h1 class="text-center p-3 fw-bold"><i>Add a new book</i></h1>
+            </div>
+
+            <div class="mb-3 form-floating">
+                <input type="text" class="form-control border border-dark" name="name" id="name" placeholder="name" required>
+                <label for="name" class="form-label fw-bold">Name</label>
+            </div>
+
+            <div class="mb-3 form-floating">
+                <input type="text" class="form-control border border-dark" name="author" id="author" placeholder="author" required>
+                <label for="author" class="form-label fw-bold">Author</label>
+            </div>
+
+            <div class="mb-3 form-floating">
+                <textarea type="text" class="form-control border border-dark" name="description" id="description" placeholder="description" required></textarea>
+                <label for="description" class="form-label fw-bold">Description</label>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <label for="image" class="form-label m-0 p-0 fw-bold">Choose a pictureFile</label>
+                    <input type="file" class="form-control border border-dark" name="image" id="image" placeholder="image" accept="image/*">
+                </div>
+
+                <div class="col-6">
+                    <label for="section"><strong>Select Section</strong></label>
+                    <select name="section" id="section" class="form-select mb-3 border border-dark">
+                        <option value="" selected disabled hidden>None</option>
+                        {% for section in all_sectionss() %}
+                        <option class="fs-5 fw-bold text-dark my-2 py" value="{{ section.id }}">{{ section.name }}</option> {% if not(loop.last) %}<hr>{% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="pdf" class="form-label m-0 fw-bold">Choose a pdfFile</label>
+                <input type="file" class="form-control border border-dark" name="pdf" id="pdf" accept=".pdf">
+            </div><hr>
+
+            <div class="mb-3 text-center">
+                <button type="submit" class="btn btn-primary border border-dark text-dark fw-bold fs-5"><i>Add Book</i></button>
+            </div>
+
+        </form>
+    </div>
+
+{% endblock %}

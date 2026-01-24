@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<br><br>
+
+<div class="card delay hidden">
+    <h5 class="card-header">Your Profile</h5>
+
+    <div class="card-body">
+        <h3 class="card-title my-font fw-bold">{{ current_user.username|capitalize }} !</h3><hr>
+        <div class="container">
+            <div class="row">
+                <div class="col-8">
+                    <p class="card-text"><strong>Username :</strong> {{ current_user.username|capitalize }}</p><br>
+                    <p class="card-text"><strong>Date Added :</strong> {{ current_user.time.strftime('%d-%m-%Y') }}</p><br>
+                    <p class="card-text"><strong>User type :</strong> {{ current_user.label|capitalize }}</p><br>
+                    
+                    <a href="/logout" class="btn btn-primary btn-md" style="--bs-btn-padding-x: 1.2rem;">Logout</a>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#upload">Upload</button>
+
+                    {% if current_user.label == "user" %}
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
+                    {% endif %} 
+                </div>
+
+                <div class="col-4">
+                    <img src="/display_profile/{{current_user.profile_path}}" align="right" height="250px" width="250px" style="border-radius: 30%;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br><br>
+
+{% if current_user.label == "user" %}
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Conformation</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you really want to <strong>Detete</strong> yourself ?
+            </div>
+            <div class="modal-footer">
+                <a href="/confirm_delete_profile" class="btn btn-md btn-danger">Delete</a>
+                <button type="button" class="btn btn-md btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="modal fade delay hidden" id="upload" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content addform-gradient">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Profile</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <form action="/upload_profile_picture" method="post" id="upload" enctype="multipart/form-data">
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="picture" class="form-label m-0 p-0 fw-bold">Choose a pictureFile</label>
+                    <input type="file" class="form-control border border-dark" name="picture" id="picture" accept="image/*" required>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn btn-outline-info fw-bold border-2"><i>Upload</i></button>
+                  <button type="button" class="btn btn btn-outline-dark fw-bold border-2" data-bs-dismiss="modal"><i>Close</i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% if current_user.granted %}
+<div class="d-flex justify-content-center">
+    <div class="col my-font italic fs-1 fw-bold text-center text-secondary ball"><span class="bg-info px-3 rounded-4 py-2">Your Current Books</span></div>
+</div><br><br>
+<div class="row">
+    {% for book in current_user.granted %}
+        {% with %}
+        <div class="col mb-5">
+            {% set looop=loop %}
+            {% include "book.html" %}
+        </div>
+        {% endwith %}
+    {% endfor %}
+</div>
+{% endif %}
+
+
+
+{% endblock %}

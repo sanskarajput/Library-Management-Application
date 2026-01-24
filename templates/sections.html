@@ -1,0 +1,83 @@
+<div class="d-flex justify-content-{% if loopvar.first and loopvar.last %}start{% else %}center{% endif %}">
+  
+  <div class="card delay hidden" style="width: 18rem;">
+      <a href="/section/{{section.id}}"><img src="/display_section/{{section.image_path}}" class="card-img-top" alt="..."  style="height: 250px;"></a>
+      
+      <div class="card-body p-2">
+        <a href="/section/{{section.id}}" class="card-title text-dark tdn my-font"><text class="fw-bold fs-4">Section :</text><text class="fw-normal fs-4 title{{loopvar.index}}"> {{ section.name }}</text></a>
+        <h6 class="text-dark fw-bold fs-6"><text class="my-font">Having : </text>{{ section.books|length }} books</h6>
+        <!-- description model  -->
+        <h6 class="card-title my-font pointer" data-bs-toggle="modal" data-bs-target="#section_description{{loopvar.index}}" style="overflow-y: hidden; height: 95px;"><text class="fw-bolder fs-6 text-primary">Description : </text><text class="fw-normal " style="font-size:15px;">{{ section.description }}</text></h6>
+      </div>
+
+      {% if current_user.label == 'librarian' %}
+      <!-- addbooktosection model  -->
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item text-center bg-light">
+          <button type="button" class="btn btn-outline-primary fw-bold border-3" data-bs-toggle="modal" data-bs-target="#addbooktosection{{loopvar.index}}">Add Book +</button>
+        </li>
+      </ul>
+      {% else %}
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item text-center bg-light py-4">
+        </li>
+      </ul>
+      {% endif %}
+  </div>
+
+  {% if current_user.label == 'librarian' %}
+  <!-- addbooktosection model  -->
+  <div class="modal fade delay hidden" id="addbooktosection{{loopvar.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm modal-dialog-scrollable">
+      <div class="modal-content addform-gradient">
+        <div class="modal-header">
+          <h1 class="modal-title fs-4 fw-bold text-dark" id="exampleModalLabel">Add Books <p class="fs-6 mb-0 my-font italic">to {{section.name}} ...</p></h1>
+          <button type="button" class="btn-close btn btn-outline-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/addbooktosection/{{section.id}}" method="POST" id="addbooktosection{{loopvar.index}}" class="modal-body fs-6 fw-semibold text-dark scrollable-content">
+          {% if remaining_books() %}
+              {% for book in remaining_books() %}
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="{{book.id}}" id="flexCheckDefault_{{loopvar.index}}_{{loop.index}}" name="books">
+                  <label class="form-check-label" for="flexCheckDefault_{{loopvar.index}}_{{loop.index}}">
+                    {{ book.name }}
+                  </label>
+              </div>
+
+              {% endfor %}
+          {% else %}
+              <p class="fw-bold fs-4 my-font">Books not available</p><br>
+              <a href="/add_book" class="tdn text-dark fw-bold">Go to add books . . . . </a>
+          {% endif %}
+          <button type="submit" id="targetElement{{loopvar.index}}" class="btn btn btn-outline-info fw-bold fs-6 border-2" data-bs-dismiss="modal" style="display: none;"><i>Add</i></button>
+      </form>
+        <div class="modal-footer">
+          <button type="button" onclick="triggerElement(this)" id="targetFrom{{loopvar.index}}" class="btn btn btn-outline-info fw-bold fs-6 border-2"><i>Add</i></button>
+          <button type="button" class="btn btn-outline-dark fw-bold fs-6 border-2" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div> 
+  {% endif %}
+
+  <!-- description model  -->
+  <div class="modal fade" id="section_description{{loopvar.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content cd-gradient">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5 text-white" id="exampleModalLabel{{loopvar.index}}">{{section.name}}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-between text-white my-font"><text class="col-auto fw-bold fs-6">Description :</text> <i class="col-auto fa-solid fa-volume-high text-info pointer fs-5" onclick="speakerForDescription(this)"></i><i class='col-auto text-primary display-none'> for stop press key `m`</i></div>
+          <br><p class="fw-normal fs-6 text-light my-font">{{ section.description }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
