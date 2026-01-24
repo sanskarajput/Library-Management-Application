@@ -975,7 +975,6 @@ def search():
 @app.route('/display/<picture_path>')
 def display(picture_path):
     picture_full_path = os.path.join(app.config["UPLOAD_FOLDER"]["PICTURE"]["OTHER"], picture_path)
-    print(f"Checking if file exists at: {picture_full_path}")  # Debugging line
     if os.path.exists(picture_full_path):
         return send_from_directory(app.config["UPLOAD_FOLDER"]["PICTURE"]["OTHER"], picture_path)
     return send_from_directory(app.config["UPLOAD_FOLDER"]["PICTURE"]["OTHER"], "background.jpg")

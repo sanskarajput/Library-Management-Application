@@ -26,7 +26,6 @@ addClassAfterDelay();
 // for showing filter input box
 function filter() {
     var myin = document.getElementById("myInput");
-    console.log(myin)
     myin.classList.remove('display-none');
 }
 
@@ -44,8 +43,6 @@ function myFunction() {
         author = that_col[i].getElementsByClassName(`author${i + 1}`)[0];
                 
         if (author){
-            console.log(title)
-            console.log(author)
             titleValue = title.textContent || title.innerText;
             authorValue = author.textContent || author.innerText;
             if (titleValue.toUpperCase().indexOf(filter) > -1 || authorValue.toUpperCase().indexOf(filter) > -1){
@@ -54,7 +51,6 @@ function myFunction() {
                 that_col[i].style.display = "none";
             }
         } else {
-            console.log(title)
             titleValue = title.textContent || title.innerText;
             if (titleValue.toUpperCase().indexOf(filter) > -1){
                 that_col[i].style.display = "";
@@ -75,7 +71,6 @@ function myreadersFunction() {
     that_col = document.getElementsByClassName("that_col");
     for (var i = 0; i < that_col.length; i++) {
         username = that_col[i].getElementsByClassName(`username${i + 1}`)[0];
-        console.log(username)
         usernameValue = username.textContent || username.innerText;
 
         if (usernameValue.toUpperCase().indexOf(filter) > -1 ){
@@ -108,11 +103,9 @@ function myrequestsFunction() {
         if (bookValue.toUpperCase().indexOf(filter) > -1 || userValue.toUpperCase().indexOf(filter) > -1 || // sectionValue.toUpperCase().indexOf(filter) > -1 ||
         durationValue.toUpperCase().indexOf(filter) > -1) {
             that_col[i].style.display = "";
-            console.log(that_col[i].nextElementSibling);
             that_col[i].nextElementSibling.style.display = "";
         } else {
             that_col[i].style.display = "none";
-            console.log(that_col[i].nextElementSibling);
             that_col[i].nextElementSibling.style.display = "none";
         }
     }
@@ -123,18 +116,14 @@ function myrequestsFunction() {
 
 // for add book to section's - form 
 function triggerElement(element) {
-    console.log(element);
     var i = element.id[element.id.length - 1];
-    console.log(i);
     var targetElement = document.getElementById('targetElement'+i);
-    console.log(targetElement);
     targetElement.click();
 }
 
 
 function triggerElementFromShowSection() {
     var targetElement = document.getElementById('targetElementFromShowSection');
-    console.log(targetElement);
     targetElement.click();
 }
 
@@ -144,11 +133,9 @@ function triggerElementFromShowSection() {
 
 // speaker for pdf 
 function speaker(element) {
-    console.log(element.parentNode.parentNode);
     var pdfPath = element.parentNode.parentNode.nextElementSibling.getElementsByTagName('embed')[0].src;
     var hidden = element.nextElementSibling;
     hidden.classList.remove('display-none');
-    console.log(pdfPath);
     var pdfUrl = pdfPath;
 
     fetch(pdfUrl)
@@ -172,7 +159,6 @@ function speaker(element) {
             
             Promise.all(promises).then(function() {
                 
-                console.log(pdfContent);
                 let synth = window.speechSynthesis;
                 let voice = new SpeechSynthesisUtterance(pdfContent);
                 voice.rate = 0.8;
@@ -195,14 +181,8 @@ function speaker(element) {
 
 // speaker for description
 function speakerForDescription(element) {
-    console.log(element);
-    console.log(element.nextElementSibling); 
     element.nextElementSibling.classList.remove('display-none'); 
-    console.log(element.parentNode); 
-    console.log(element.parentNode.nextElementSibling);  
-    console.log(element.parentNode.nextElementSibling.nextElementSibling);  
     var content = element.parentNode.nextElementSibling.nextElementSibling.innerText;   
-    console.log(content);
     let synth = window.speechSynthesis;
     let voice = new SpeechSynthesisUtterance(content);
     voice.rate = 0.7;
