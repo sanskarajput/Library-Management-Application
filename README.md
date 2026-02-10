@@ -288,8 +288,6 @@ Unlike modern single-page applications (SPAs), this project utilizes **tradition
 - Provides better initial load times and SEO benefits
 - Demonstrates fundamental web development principles
 
-This architectural choice was intentional to focus on backend development skills and understanding of request-response cycles in web applications.
-
 ---
 
 <div align="center">
