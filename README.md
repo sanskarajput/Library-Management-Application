@@ -2,6 +2,29 @@
 
 A full-stack web application designed to streamline library operations and enhance the reading experience. Built as a college project, this system demonstrates practical implementation of web development concepts while solving real-world library management challenges.
 
+## 📑 Table of Contents
+
+- [Demo Access](#-demo-access)
+- [Project Overview](#-project-overview)
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Project Structure](#-project-structure)
+- [Installation & Setup](#-installation--setup)
+- [Using the Application](#-using-the-application)
+
+## 🧪 Demo Access
+
+Live demo URL:
+👉 [https://library-management-application-gklu.onrender.com](https://library-management-application-gklu.onrender.com)
+
+Test accounts:
+- For Librarian
+  - Username: `librarian`
+  - Password: `librarian@1234`
+- For Reader
+  - Username: `reader-1`
+  - Password: `reader@1`
+
 ## 🎯 Project Overview
 
 This Library Management System is a **server-side rendered web application** developed using Flask, offering a complete solution for managing library resources, user interactions, and administrative tasks. The application follows the traditional Model-View-Controller (MVC) architecture, where all pages are dynamically rendered on the server using Jinja2 templates, providing a seamless and interactive experience.
