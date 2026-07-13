@@ -4,7 +4,8 @@ from flask import abort
 from sqlalchemy.orm import aliased
 from sqlalchemy import func
 import random
-
+import os
+import requests
 
 ####################################################### will shuffle list of comments #######################################################
 def Random(list):
@@ -27,6 +28,31 @@ def delete_access():
         print(f"Error deleting accesses: {e}")
 
 
+####################################################### to keep server up #######################################################
+def keep_server_up():
+    try:          
+        res = requests.get(os.environ.get("SERVER_URL", "http://localhost:5000/"))
+        
+        # Safely attempt to parse the response as JSON
+        try:
+            response_data = res.json()
+        except ValueError:
+            response_data = {"raw_text": res.text}
+            
+        result = {
+            "status": "success",
+            "status_code": res.status_code,
+            "response": response_data
+        }
+        
+        print(f"Server pinged successfully: {result}")
+        
+    except Exception as e:
+        result = {
+            "status": "error",
+            "message": str(e)
+        }
+        print(f"Error occurred: {result}")
 
 
 ####################################################### for making 3 pair tuples of users #######################################################

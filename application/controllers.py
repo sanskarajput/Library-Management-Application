@@ -1,5 +1,5 @@
 from application.login import *
-from flask import  flash , render_template ,redirect ,url_for ,request, send_from_directory,g
+from flask import  flash , render_template ,redirect ,url_for ,request, send_from_directory,g, jsonify
 from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 import os 
@@ -18,6 +18,7 @@ from sqlalchemy import func
 def add_librarian():
     with app.app_context():
         if os.environ.get('RENDER'):
+            print("Running on Render. Skipping database setup and librarian creation.")
             db.create_all()
             return
 
@@ -67,7 +68,9 @@ def index():
     return render_template("index.html",page="index")
 
 
-
+@app.route('/health')
+def health():
+    return jsonify({"status": "ok"}), 200
 
 
 # # # # # # # # # # # # # # # # # # Signup user  # # # # # # # # # # # # # # # #

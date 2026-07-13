@@ -31,6 +31,12 @@ def create_app():
         with app.app_context():
             delete_access()
 
+    # if deplohyer is render then keeep server up
+    if os.environ.get('RENDER'):
+      @scheduler.task('interval', id='keep_server_up', seconds=5)
+      def scheduled_job():
+         keep_server_up()
+
     return app, scheduler
 
 
