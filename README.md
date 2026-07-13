@@ -177,12 +177,12 @@ Library-Management-Application/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/sanskarajput/Library-Management-Application
 cd Library-Management-Application
 ```
 
 
-### Step 2: Create Virtual Environment (Recommended)
+### Step 2: Create Virtual Environment (Recommended but Optional)
 
 ```bash
 # Windows
@@ -225,8 +225,12 @@ flask db upgrade
 
 On the first run, the application will prompt you in the terminal to create a librarian account:
 
-- Enter a librarian username
-- Enter a password (input hidden)
+```
+>>> Database Already Exists. Want to setup a new database ? (y/N): n
+>>> Librarian Already Exists. Want to setup a new librarian ? (y/N): y
+>>> Set your username to become a librarian : admin
+>>> Set your password : 
+```
 
 If you’re using an **existing database**, this step is **not required**.
 

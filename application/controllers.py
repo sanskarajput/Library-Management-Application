@@ -6,22 +6,57 @@ import os
 import uuid,random
 import getpass  # for hidden passwords in terminal
 
+from .config import LocalDevelopmentConfig
+
 bcrypt = Bcrypt(app)
 
-# add librarian if does't exist
+# create database optionally and add librarian if does't exist from terminal
+import os
+import getpass
+from sqlalchemy import func
+
 def add_librarian():
     with app.app_context():
+        if os.environ.get('RENDER'):
             db.create_all()
-            if Users.query.filter_by(label="librarian").first() is None:
-                username = input("Set your username to become a librarian : ")
-                while Users.query.filter(func.lower(Users.username) == username.lower()).first():
-                    username = input("( Username not available ) username to become a librarian : ")
-                password = getpass.getpass("Set your password : ")
-                user = Users(username=username, password=bcrypt.generate_password_hash(password),label = "librarian")
-                db.session.add(user)
-                db.session.commit()
+            return
 
+        db_uri = LocalDevelopmentConfig.SQLALCHEMY_DATABASE_URI
+        db_path = db_uri.replace("sqlite:///", "")
 
+        # Create or recreate the local database based on your setup rules
+        if os.path.exists(db_path):
+            choice = input("Database Already Exists. Want to setup a new database ? (y/N): ").strip().lower()
+            if choice == 'y':
+                db.drop_all()
+                db.create_all()
+        else:
+            db.create_all()
+
+        librarian_count = Users.query.filter_by(label="librarian").count()
+        
+        if librarian_count > 0:
+            choice = input("Librarian Already Exists. Want to setup a new librarian ? (y/N): ").strip().lower()
+            if choice != 'y':
+                print("Skipping librarian setup. Database is ready !")
+                return 
+            
+            # Wipe existing librarians if deployer agreed to overwrite
+            Users.query.filter_by(label='librarian').delete()
+            db.session.commit()
+
+        # 4. Prompt for new credentials (runs once, without code duplication)
+        username = input("Set your username to become a librarian : ").strip()
+        while Users.query.filter(func.lower(Users.username) == username.lower()).first():
+            username = input("( Username not available ) username to become a librarian : ").strip()
+        
+        password = getpass.getpass("Set your password : ")
+        hashed_pw = bcrypt.generate_password_hash(password)
+        
+        user = Users(username=username, password=hashed_pw, label="librarian")
+        db.session.add(user)
+        db.session.commit()
+        print("Local librarian account created successfully!")
 
 
 

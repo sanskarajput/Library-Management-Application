@@ -1,6 +1,6 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-print(basedir)
+
 class Config():
     DEBUG = False
     SECRET_KEY = None
@@ -12,7 +12,7 @@ class Config():
 
 class LocalDevelopmentConfig(Config):
     DEBUG = True
-    SECRET_KEY = "hello world what are you doing ?"
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'a_temporary_local_fallback_key')
     SQLITE_DB_DIR = os.path.join(basedir, "../database")
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "database.sqlite3")
     UPLOAD_FOLDER_PATH = os.path.join(basedir, "..", "../media")
